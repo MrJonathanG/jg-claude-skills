@@ -61,6 +61,21 @@ When status moves to `complete`, post a closeout comment with: what got produced
 
 Activity = what got accomplished. Description = what was supposed to be accomplished. Different audiences.
 
+### Outcome-evidence rule (the closeout-must-prove-it-works rule)
+
+Closure requires citing **outcome-evidence per done-when item, not input-evidence**. Input-evidence is what got produced (artifacts, edits, commits). Outcome-evidence is what those artifacts cause when exercised — does the system actually behave the intended way end-to-end?
+
+- ❌ Insufficient — input-evidence: *"Edited FRAMEWORK.md §10.3 (commit X)"*, *"Tier 1 fixtures pass 7/7"*, *"All three doc edits landed"*
+- ✅ Sufficient — outcome-evidence: *"Live agent emits §12 Appendices subsection per spec — verified via session sesn_01XvTPN…"*, *"End-to-end run against synthetic CSV produces 12-section report with §12 data-interpretation populated"*
+
+When outcome-evidence requires deferred validation (an eval run, a next-task verification session, a downstream consumer's confirmation), the closeout must say so explicitly:
+
+> *"Closure pending outcome-evidence — to be verified by [linked task]; reopen if validation fails."*
+
+Don't close on input-evidence and frame the deferred validation as a backlog item — the closure itself stays conditional until outcome is observed. This rule exists because input-evidence closures repeatedly missed real drift between artifact and behavior; see PBI 86e134hpp friction-test #1 and #2 for the originating incidents.
+
+Full closeout format with outcome-evidence examples in `references/tables.md`.
+
 ## Surface tags
 
 Applied at completion (NOT creation). Multiple surfaces → multiple tags. Tag values: `claude-chat`, `claude-code`, `claude-cowork`, `claude-chrome`, `claude-design`, `claude-excel`, `claude-powerpoint`, `claude-platform`. Full list and usage in `references/tables.md`.
@@ -107,7 +122,8 @@ Subtasks auto-link to parents. Cross-list discovered tasks do NOT. Reference ori
 
 1. Status moved through `in progress` (not `to do` → `complete` directly)?
 2. Closeout comment posted in required format?
-3. Surface tag(s) applied?
-4. If subtasks exist — all `complete` before parent?
-5. Discovered work routed correctly (subtask vs. new task vs. backlog vs. insight)?
-6. Status strings spelled exactly: `to do`, `in progress`, `complete`?
+3. **Each done-when item cited with outcome-evidence (system behaves the intended way), not input-evidence (artifact got produced)?** If any item's evidence is deferred, closeout explicitly says "pending outcome-evidence — verified by [linked task]; reopen if validation fails."
+4. Surface tag(s) applied?
+5. If subtasks exist — all `complete` before parent?
+6. Discovered work routed correctly (subtask vs. new task vs. backlog vs. insight)?
+7. Status strings spelled exactly: `to do`, `in progress`, `complete`?

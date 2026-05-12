@@ -49,7 +49,7 @@ When wrapping a session:
 
 **1. Exit criteria audit.** Did each opener "Done when" criterion get done? Anything skipped, half-done, or quietly deferred?
 
-**2. Loose-ends sweep.** The high-value checks: code committed AND pushed, no stray scope creep, subtasks created mid-session have descriptions, decisions captured somewhere, tracker matches reality on disk. Full sweep checklist in `references/templates.md` — run every check.
+**2. Loose-ends sweep.** The high-value checks: code committed AND pushed, no stray scope creep, subtasks created mid-session have descriptions, decisions captured somewhere, tracker matches reality on disk. **Outcome-evidence check** — for every "Done when" item, ask "what behavior change does this produce, and have I observed it?" Input-evidence (artifact got made, tests pass against fixtures) is not the same as outcome-evidence (system behaves the intended way end-to-end). When outcome-evidence is deferred to a downstream task or eval run, surface that explicitly in the close summary so the closeout itself stays conditional — defer to `clickup-pm-workflow`'s outcome-evidence rule for the closeout phrasing. Full sweep checklist in `references/templates.md` — run every check.
 
 **3. Tracker sync.** Perform per `clickup-pm-workflow` (closeout comment, surface tags, parent-sync, status transitions). This skill calls it; that skill defines it.
 
@@ -58,7 +58,11 @@ When wrapping a session:
 ## The 5-part close summary (this IS the handoff)
 
 ```
-**Done this session:** [bullets vs. opener criteria + loose-ends results]
+**Done this session:** [bullets vs. opener criteria + loose-ends results — each bullet
+                       cites outcome-evidence per opener criterion (system behaves the
+                       intended way), not input-evidence (artifact got produced).
+                       Deferred outcome-evidence → flag explicitly with the linked
+                       validation task, per clickup-pm-workflow's outcome-evidence rule.]
 **Need from you:** [decisions, approvals, producer-side actions, blockers — or "Nothing — clean handoff"]
 **Insights logged this session:** [proposed text — user approves before posting, or "None"]
 **Backlog items added this session:** [proposed text — user approves before posting, or "None"]
@@ -66,6 +70,8 @@ When wrapping a session:
 ```
 
 A if everything closed cleanly. B if something needs user resolution. Default to B if uncertain.
+
+A session is **not** "clean handoff" if any Done-this-session bullet is input-evidence-only (artifact produced without verified outcome). Either upgrade the evidence by running the verification before closing, or flag the deferred-validation per `clickup-pm-workflow`'s outcome-evidence rule and route the validation as its own next-session task.
 
 ## End-of-phase extension
 
@@ -98,11 +104,12 @@ Don't reconcile silently. Don't proceed with caveats.
 ## Quick self-check before reporting session as closed
 
 1. Every opener "Done when" criterion bulleted in the close summary?
-2. Loose-ends sweep performed (commits pushed, subtask descriptions, decisions captured)?
-3. Tracker sync delegated to `clickup-pm-workflow` and confirmed complete?
-4. Insights and backlog proposals shown to user for approval before posting?
-5. Next-session block populated (drafted opener OR explicit issues to resolve)?
-6. If a phase closed: end-of-phase extension run, milestone task closed?
+2. **Each "Done this session" bullet cites outcome-evidence, not input-evidence?** (Deferred outcome → explicitly flagged with the linked validation task per `clickup-pm-workflow`'s outcome-evidence rule.)
+3. Loose-ends sweep performed (commits pushed, subtask descriptions, decisions captured)?
+4. Tracker sync delegated to `clickup-pm-workflow` and confirmed complete?
+5. Insights and backlog proposals shown to user for approval before posting?
+6. Next-session block populated (drafted opener OR explicit issues to resolve)?
+7. If a phase closed: end-of-phase extension run, milestone task closed?
 
 ## Bootstrap instruction (optional, for global preferences)
 

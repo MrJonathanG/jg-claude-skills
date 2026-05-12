@@ -89,6 +89,12 @@ The loose-ends sweep is the highest-value part of the close audit. It catches wh
 - [ ] Anything skipped from opener scope? (note as deferred or as failed criterion)
 - [ ] Half-done work — captured as a follow-up task or noted as in-progress?
 
+### Outcome-evidence check (the closure-must-prove-it-works check)
+- [ ] For each opener "Done when" criterion, ask: what behavior change does this produce, and have I **observed** that behavior?
+- [ ] Distinguish input-evidence (artifact produced — edits made, fixtures pass, commit landed) from outcome-evidence (system behaves the intended way end-to-end when exercised).
+- [ ] If outcome-evidence is deferred to a downstream task / eval run / live session, the close summary flags the deferral explicitly with the linked validation task — per `clickup-pm-workflow`'s outcome-evidence rule.
+- [ ] Default is **not** "clean handoff" when any criterion has input-evidence only. Either upgrade evidence by running the verification before closing, or route the validation as its own next-session task and let the closeout stay conditional.
+
 ### Cross-surface handoffs
 - [ ] If work was sent to another Claude surface (Code, Cowork, Excel, etc.), is the handoff brief written and complete?
 - [ ] If receiving a handoff this session, is the receiving state aligned with what was sent?

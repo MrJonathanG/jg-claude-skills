@@ -28,13 +28,43 @@ Moving directly from `to do` to `complete` without an `in progress` interval is 
 When a task closes (status → `complete`), post a closeout comment in this exact format:
 
 ```
-**Done:** [what got produced — one line, factual, not interpretive]
+**Done:** [outcome-evidence per done-when item — see Outcome-evidence rule below]
 **Surface:** [Claude service tag(s) used during execution]
 **Commits:** [hash(es) if applicable, or "n/a"]
 **Notes:** [anything worth knowing later — optional]
 ```
 
 Activity = what got accomplished. Description = what was supposed to be accomplished. Different audiences: description is for the person starting work; activity is for the person reviewing what got done.
+
+### Outcome-evidence rule (closeout content)
+
+The **Done:** block must cite outcome-evidence per done-when item — what the system actually does when exercised — not input-evidence (what artifacts got produced). Input-evidence is necessary but not sufficient: it proves something was written; it does not prove the system behaves the intended way.
+
+Examples — closing the same task two ways:
+
+| Done-when item | ❌ Input-evidence (insufficient) | ✅ Outcome-evidence (sufficient) |
+|---|---|---|
+| Spec edit lands new clause | "Edited FRAMEWORK.md §10.3 (commit X)" | "Live agent emits §12 Appendices subsection per spec — verified via session sesn_01XvTPN…" |
+| Test fixtures cover new behavior | "Tier 1 fixtures pass 7/7" | "Tier 1 fixtures pass 7/7 AND live agent run against synthetic CSV emits the same data-interpretation surface as the fixtures — verified [session]" |
+| Wrapper script supports new flag | "Added --input-file handling to wrapper.sh" | "Wrapper opens session with file mounted at /mnt/session/uploads/inputs/<file>; agent reads file at that path and emits report — verified [session]" |
+| Doc clarification | "Added paragraph to README" | "Reader following the new paragraph reaches the intended action without further questions — verified by [reviewer / next-session opener that consumed it]" |
+
+### Deferred-validation pattern
+
+When outcome-evidence requires a downstream consumer (eval run, next task, live test session) that doesn't exist yet, the closeout must explicitly defer:
+
+```
+**Done:** [Input-evidence summary], pending outcome-evidence — to be verified by [linked task];
+         reopen if validation fails.
+**Surface:** ...
+**Commits:** ...
+```
+
+Do not silently close on input-evidence and frame the deferred validation as a backlog item. The closure itself is conditional until the linked validation runs. Reopen this task — don't just observe failure in the downstream task — if validation surfaces a gap between artifact and intended behavior.
+
+### Why this rule exists
+
+Input-evidence closures repeatedly missed drift between artifact and behavior. Originating incidents in PBI 86e134hpp friction-test entries (occurrence #1 surface-keyword closure, occurrence #2 SPEC-MANUAL-DATA-INTERP premature closure on 2026-05-12). The rule promotes from "watch for the pattern" to "block closure that doesn't comply."
 
 ## Surface tags (full table)
 

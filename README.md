@@ -2,11 +2,11 @@
 
 Personal Claude skills used across projects.
 
-Three skills as of initial commit:
+Three skills:
 
 - `app-build-orchestrator` — orchestrate end-to-end builds across Claude product surfaces (Chat, Code, Cowork, Chrome, Excel, PowerPoint, artifacts, MCP).
-- `clickup-pm-workflow` — ClickUp project tracking conventions (status vocabulary, hierarchy decisions, milestone naming, MCP-specific limitations).
-- `dev-session-protocol` — session boundary discipline for development work (4-line opener, 5-part close summary, end-of-phase audit, stop-and-surface triggers).
+- `clickup-pm-workflow` — ClickUp project tracking conventions (status vocabulary, hierarchy decisions, milestone naming, MCP-specific limitations, **outcome-evidence rule** for closeout comments).
+- `dev-session-protocol` — session boundary discipline for development work (4-line opener, 5-part close summary with outcome-evidence per criterion, end-of-phase audit, stop-and-surface triggers).
 
 ## Layout
 
@@ -19,9 +19,11 @@ jg-claude-skills/
     │   └── SKILL.md
     ├── clickup-pm-workflow/
     │   ├── SKILL.md
+    │   ├── README.md
     │   └── references/tables.md
     └── dev-session-protocol/
         ├── SKILL.md
+        ├── README.md
         └── references/templates.md
 ```
 
