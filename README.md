@@ -33,10 +33,21 @@ These are settled. The repo is built to enforce them; don't re-litigate them.
    done by pointing at a *frozen location* (e.g. a tagged path), never via a
    "version" field on the pointer. See [`standards/change-control.md`](standards/change-control.md).
 
-4. **GitHub is the executable source of truth.** Not a mirror, not a backup —
-   the canonical copy. Local synced installs (`~/.claude/skills/`) are
-   *downstream* of this repo. When the two diverge, this repo wins and the
-   divergence is surfaced for reconciliation, never silently overwritten.
+4. **GitHub is the distribution hub — not a passive mirror.** This is the
+   load-bearing correction: for a skill to be usable in *every* Claude
+   environment (local CLI, desktop, claude.ai/code web, scheduled routines,
+   Cowork), it must be distributed from here. Personal `~/.claude/skills/` is
+   **local-only** — web sessions and routines cannot see it. So shared skills
+   must never live only there; that's "dark matter" (invisible everywhere but
+   one machine — exactly what stranded `project-context-sync`). Distribution is
+   the job of a **plugin marketplace** in this repo, enabled declaratively via a
+   committed `.claude/settings.json`, so all environments install the same set.
+
+   *Authoring vs. distribution.* You may **author/edit** a skill inside your
+   local Claude if that's where you like to work — but it only becomes real
+   (visible everywhere) once **published to this repo**. The authoring surface
+   can be local; the distribution hub is always GitHub. Your local install is a
+   working copy that installs *from* the hub, not an independent home.
 
 5. **Shared-skill changes are propose-then-approve.** Because one edit here
    reaches every project, no automation may silently rewrite a skill body. The
@@ -77,13 +88,28 @@ jg-claude-skills/
 - **Change a skill:** edit the body here, on a branch, via PR. The change reaches
   every pointing project once merged (floating). To *not* propagate, pin (rare).
 
-## Install (downstream)
+## Install (every environment, from this hub)
 
-These skills auto-install at `~/.claude/skills/` via the Claude Code
-personal-skills mechanism. That install is **downstream** of this repo — edits
-land here first, version control happens here, then the install flow propagates.
-Do not edit `~/.claude/skills/` directly; that path is managed by Claude Code and
-the sync routine treats this repo as authoritative when the two diverge.
+Skills are distributed as a **plugin marketplace** so every environment installs
+the *same* set from this one repo — no per-machine hand-copying, and nothing
+stranded as a personal local skill.
+
+- **Why not `~/.claude/skills/`?** Personal skills there are **local-only**:
+  web sessions and scheduled routines can't see them. They cannot be the
+  distribution mechanism for skills that need to work everywhere.
+- **How distribution works:** the repo carries a marketplace
+  (`.claude-plugin/marketplace.json` + per-plugin `plugin.json` + `skills/`), and
+  a committed `.claude/settings.json` declares it via `extraKnownMarketplaces`
+  and `enabledPlugins`. CLI, desktop, web sessions, and routines then auto-enable
+  the same plugins on load — declarative, no manual per-machine steps.
+- **Authoring:** edit skills here (or author in your local Claude and publish up
+  promptly). The repo is canonical for distribution; treat any local
+  `~/.claude/skills/` copy as a working copy synced from this hub, not a source.
+
+> Status: the marketplace packaging (`marketplace.json` / `plugin.json` /
+> `.claude/settings.json`) is the next structural step — see the open PR /
+> session notes. Until it lands, the `skills/` bodies are present and
+> version-controlled here, but cross-environment auto-install is not yet wired.
 
 ## The sync routine
 
