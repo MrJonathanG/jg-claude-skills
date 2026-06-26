@@ -94,7 +94,9 @@ reality and **proposes** (never silently applies) changes:
 - Checks each skill's stated trigger/description for staleness signals (e.g.
   references to renamed paths) and opens an issue/PR — it does **not** rewrite
   skill bodies.
-- Surfaces any divergence between a local synced install and this repo.
+- Surfaces divergence between a local synced install and this repo — but only
+  from a *local* session that can see both sides; the cloud routine reconciles
+  repo-internal state only (it can't see any machine's `~/.claude/skills/`).
 
 Output is a PR or issue against this repo for human review. See
 [`routines/`](routines/) for the definition and creation path.

@@ -52,9 +52,12 @@ Do the following, working only in this repo:
      (the trigger belongs only in the skill body — see standards/pointer-rule.md).
    Flag these; do not fix the bodies yourself.
 
-3. If a local synced install is reachable in this environment
-   (~/.claude/skills/), diff it against skills/ here and surface any divergence.
-   The repo is authoritative; report the diff, do not overwrite either side.
+3. Local-install divergence is OUT OF SCOPE for this cloud routine: a cloud
+   session clones the repo and cannot see any machine's ~/.claude/skills/, so
+   the repo is the whole universe here. (The local-vs-repo diff is a job for a
+   LOCAL Claude session running on the machine, which can see both sides — see
+   "Local divergence" below.) Reconcile repo-internal state only: the registry
+   table vs. skills/ contents, plus the description/trigger staleness in step 2.
 
 4. Consolidate findings into ONE artifact:
    - If there are body/description changes to propose, open a PR with the
@@ -90,6 +93,25 @@ to add it to the claude.ai routine if you want the *judgment* pass to run on
 every skill edit too — otherwise the daily tick plus the Action's push trigger
 is sufficient. Recommended default: leave the routine daily-only and let the
 Action handle push-time mechanical checks.
+
+## Local divergence (a local-session job, not this routine)
+
+The repo is the source of truth; each machine's `~/.claude/skills/` is a
+**downstream copy**. Detecting drift between the two requires a session that can
+see *both* — i.e. a **local** Claude Code session running on that machine, not a
+cloud routine. Run that check locally when you suspect a machine has edits that
+were never published upstream:
+
+1. From a local session, diff `~/.claude/skills/<name>/` against this repo's
+   `skills/<name>/`.
+2. If the local copy has changes the repo lacks, **publish them upstream**
+   (commit to the repo on a branch → PR). The repo wins; the local copy should
+   end up matching it, not the other way around.
+3. New skills that exist only locally get added to the repo the same way, then
+   indexed in `SKILL_REGISTRY.md`.
+
+This is how a local-only skill becomes registry-governed. Until a skill is in
+the repo, the cloud routine cannot see or reconcile it.
 
 ## Caps & limits (confirmed)
 
