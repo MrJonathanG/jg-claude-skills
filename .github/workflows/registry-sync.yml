@@ -1,0 +1,82 @@
+name: registry-sync
+
+# Daily reconciliation of the skill registry against reality.
+#
+# Two automations are intentionally separate (see repo README): this is the
+# SKILL-REGISTRY sync only. In-place Dropbox/Synology editing is out of scope.
+#
+# This job NEVER rewrites skill bodies. It runs the mechanical reconciliation
+# (scripts/reconcile-registry.sh) and, on findings, opens or refreshes a single
+# tracking ISSUE for human review. Propose-then-approve — see
+# standards/change-control.md.
+
+on:
+  schedule:
+    # Daily heartbeat at 08:17 UTC (off the :00 mark on purpose). Well within
+    # any routine cap and the 1-hour-minimum interval.
+    - cron: "17 8 * * *"
+  # Also react when skill files or the index change, so drift is caught at push
+  # time, not only on the daily tick. Trim this trigger if you want daily-only.
+  push:
+    paths:
+      - "skills/**"
+      - "SKILL_REGISTRY.md"
+      - "scripts/reconcile-registry.sh"
+  workflow_dispatch: {}
+
+# Least privilege: this repo only, just the scopes the job needs.
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: registry-sync
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run reconciliation
+        id: recon
+        run: |
+          set +e
+          out="$(bash scripts/reconcile-registry.sh 2>&1)"
+          code=$?
+          echo "$out"
+          {
+            echo "report<<REPORT_EOF"
+            echo "$out"
+            echo "REPORT_EOF"
+            echo "code=$code"
+          } >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Open or refresh tracking issue on findings
+        if: steps.recon.outputs.code != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPORT: ${{ steps.recon.outputs.report }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          title="registry-sync: registry vs reality drift"
+          marker="<!-- registry-sync-tracking-issue -->"
+          body="$(printf '%s\n\n```\n%s\n```\n\nRun: %s\n\n_Proposed, not applied. Reconcile by editing SKILL_REGISTRY.md / skill bodies via PR — see standards/change-control.md. This job never rewrites bodies._\n%s\n' \
+            "Daily reconciliation found drift between the registry's stated state and the skills/ contents:" \
+            "$REPORT" "$RUN_URL" "$marker")"
+
+          existing="$(gh issue list --state open --search "$marker in:body" --json number --jq '.[0].number' || true)"
+          if [ -n "${existing:-}" ] && [ "${existing}" != "null" ]; then
+            gh issue comment "$existing" --body "$body"
+            echo "Refreshed issue #$existing"
+          else
+            gh issue create --title "$title" --body "$body" --label registry-sync || \
+              gh issue create --title "$title" --body "$body"
+          fi
+
+      - name: Report clean
+        if: steps.recon.outputs.code == '0'
+        run: echo "Registry and reality are consistent. No issue opened."
