@@ -1,0 +1,17 @@
+{
+  "name": "ai-project-framework",
+  "description": "Portable, cross-session, cross-AI project management. Keeps durable per-project context files in cloud storage (Dropbox-first; also Box, Google Drive, local) so project state survives across Claude surfaces and other AIs. v0.1 ships the project-context-sync skill: propose-then-approve session load and close reconcile, real-time updates, in-place edits with an append-only changelog and a clobber guard. Composes with domain packs and dev-session-protocol.",
+  "author": {
+    "name": "Jonathan (JG & Co.)"
+  },
+  "keywords": [
+    "project-management",
+    "context",
+    "cross-session",
+    "cross-ai",
+    "dropbox",
+    "portable-context",
+    "session-protocol"
+  ],
+  "license": "UNLICENSED"
+}

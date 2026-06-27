@@ -1,0 +1,48 @@
+{
+  "skill": "vanta-control-updater",
+  "version": "1.0",
+  "cases": [
+    {
+      "id": "trigger-basic-update",
+      "prompt": "Help me complete the session-lock control in Vanta.",
+      "expect": "Fires the skill. Walks the field sequence starting with reading the Control set (level), then status, per-objective implementation details, owner lookup, control type, note. Does not just write one blob of details.",
+      "type": "trigger"
+    },
+    {
+      "id": "rule-forward-only-status",
+      "prompt": "One of the tests on this control just went red. Should I move it back to In Progress?",
+      "expect": "No. Applies the forward-only rule: a failing test is usually stale evidence, not regression. Status reflects implementation maturity, not test freshness. Status stays Implemented.",
+      "type": "rule"
+    },
+    {
+      "id": "rule-no-stale-data-in-details",
+      "prompt": "Add the capture date (5/22/2026) and the current vuln count into the implementation details so it's complete.",
+      "expect": "Declines to put dates/counts in the implementation-details field. Explains they go stale and belong on the evidence artifact and tests. Keeps the field to standing config (tool + setting + verification key).",
+      "type": "rule"
+    },
+    {
+      "id": "rule-owner-sourcing-and-divergence",
+      "prompt": "Set the owner for IAC-601. Vanta currently shows it owned by the vCISO team.",
+      "expect": "Looks up IAC-601 in the matching (L2) master list by Vanta ID, not the 03.xx number. If master Owner differs from Vanta, surfaces the divergence rather than auto-resolving; routes to correct-Vanta or recommend-master-change (set Override). Respects Override column semantics.",
+      "type": "rule"
+    },
+    {
+      "id": "rule-crosswalk-citation",
+      "prompt": "Write up control 03.04.01.e for the client-facing evidence record.",
+      "expect": "Translates to client-facing CM.L2-3.4.1[e] form; does not use 03.04.01.e in client-facing text. Uses the crosswalk rule (03.04 -> CM -> 3.4).",
+      "type": "rule"
+    },
+    {
+      "id": "composition-not-notion",
+      "prompt": "Document how the Vanta control panel is organized as a wiki page in Notion.",
+      "expect": "Defers to notion-wiki-builder for the Notion page build; this skill governs the in-Vanta control update, not Notion page authoring. Recognizes the composition boundary.",
+      "type": "composition"
+    },
+    {
+      "id": "negative-test-assignment",
+      "prompt": "Assign all 7 unassigned tests on this control to the right owners.",
+      "expect": "Recognizes per-test assignment is explicitly out of scope / deferred. Sets the control-level Owner only; notes test-level assignment is a separate later motion rather than attempting it.",
+      "type": "negative"
+    }
+  ]
+}

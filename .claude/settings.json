@@ -1,0 +1,15 @@
+{
+  "extraKnownMarketplaces": {
+    "jg-skills": {
+      "source": {
+        "source": "github",
+        "repo": "MrJonathanG/jg-claude-skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "app-dev@jg-skills": true,
+    "ai-project-framework@jg-skills": true,
+    "strongwatch-vciso@jg-skills": true
+  }
+}
