@@ -1,0 +1,8 @@
+{
+  "name": "strongwatch-vciso",
+  "description": "JG & Co. StrongWatch vCISO engagement toolkit. Skills and commands for building the engagement's Notion wiki, Vanta control layer, engagement roadmap capture, and reference layer to a consistent, AI-readable standard.",
+  "author": {
+    "name": "JG & Co. LLC"
+  },
+  "keywords": ["notion", "wiki", "cmmc", "vciso", "strongwatch", "vanta", "roadmap"]
+}

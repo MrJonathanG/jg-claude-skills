@@ -1,0 +1,54 @@
+{
+  "skill": "roadmap-capture",
+  "version": "1.0",
+  "cases": [
+    {
+      "id": "capture-explicit-trigger",
+      "prompt": "I have a new idea for Cat 11 — we should automate weekly evidence collection.",
+      "expect": "Fires the skill in capture mode. Quotes the message verbatim into Originating context with date/session. Auto-classifies Domain = Cat 11 Automation and Type = Automation. Interviews (one question per turn) for Objective and Mission as narrative fields, plus Acceptance criteria. Confirms the classification before writing, then writes the row to data_source_id de6dbd05-8a63-4dde-82ec-8dd45c0dce45 and returns the link.",
+      "type": "trigger"
+    },
+    {
+      "id": "capture-implicit-trigger",
+      "prompt": "We should build a dashboard for vendor risk.",
+      "expect": "Recognizes 'We should build...' as a capture trigger. Auto-classifies Type = Automation/Notion Page (dashboard) and proposes a Domain, runs the Objective/Mission interview, confirms classification, then writes. Does not require the user to say the word 'roadmap'.",
+      "type": "trigger"
+    },
+    {
+      "id": "auto-classification-disambiguation",
+      "prompt": "Add to the roadmap: a monthly thing that pulls data and produces a leadership report.",
+      "expect": "Treats Domain as ambiguous between Cat 11 Automation and Reporting (automation that emits a report). Asks the user which fits rather than guessing, per domain-classifier disambiguation. Only then proceeds to interview and confirm.",
+      "type": "rule"
+    },
+    {
+      "id": "confirmation-rejection",
+      "prompt": "[After the skill proposes Domain: Reporting · Priority: Mid-term · Type: Deliverable] No, that's not right.",
+      "expect": "Does not write the row. Asks which field to revise (one question), applies the correction, and re-confirms the full classification before writing. Never writes on a rejected classification.",
+      "type": "rule"
+    },
+    {
+      "id": "read-query-by-domain",
+      "prompt": "What's on the roadmap for Cat 11?",
+      "expect": "Enters read mode. Queries the data source filtered to Domain = Cat 11 Automation and returns a short formatted list (Name · Status · Priority · Objective). May point at the By Domain saved view. Does not start a capture interview.",
+      "type": "trigger"
+    },
+    {
+      "id": "read-query-near-term",
+      "prompt": "What's near-term?",
+      "expect": "Read mode. Filters Priority = Near-term AND Status != Live AND Status != Retired, returns the formatted result, optionally pointing at the Near-term saved view.",
+      "type": "trigger"
+    },
+    {
+      "id": "offline-fallback-flagged",
+      "prompt": "[Notion MCP unreachable] Capture this as a future item: build an Excel companion to the COO report.",
+      "expect": "Cannot read the live schema, so falls back to references/00-snapshot.md for schema and classification rules and explicitly states in its output that it used the offline snapshot rather than the live schema, noting it should be reconciled. Still runs the verbatim-capture + interview + confirm flow.",
+      "type": "rule"
+    },
+    {
+      "id": "live-schema-preference",
+      "prompt": "[Notion reachable] Add to backlog: a quarterly access-review packet generator.",
+      "expect": "Fetches the live data source schema (collection://de6dbd05-8a63-4dde-82ec-8dd45c0dce45) before writing and uses live select options rather than the snapshot. Does not flag an offline fallback when live was used.",
+      "type": "rule"
+    }
+  ]
+}

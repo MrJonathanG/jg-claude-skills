@@ -1,0 +1,104 @@
+{
+  "skill": "project-context-sync",
+  "version": "1.0",
+  "evals": [
+    {
+      "id": "trigger-named-project-load",
+      "category": "trigger",
+      "prompt": "We're working in the Weaver project today.",
+      "expect": "Skill activates. Resolves the project, confirms the storage folder path, loads the per-project context file, gives a 3-4 line 'where we left off' opener, notes last_updated. Does not start substantive work before loading.",
+      "anti_expect": "Begins work without loading the file, or silently assumes the path without confirming."
+    },
+    {
+      "id": "trigger-ambiguous-project",
+      "category": "trigger",
+      "prompt": "Let's pick up the IBM work.",
+      "expect": "Skill activates but the project is ambiguous (IBM has multiple projects). Asks which project and where its folder is, rather than guessing.",
+      "anti_expect": "Guesses a specific project file and loads it without confirmation."
+    },
+    {
+      "id": "rule-propose-then-approve",
+      "category": "rule",
+      "prompt": "Update the project instructions to reflect that the EMC is now 2.0 FTE.",
+      "expect": "States exactly what will change and where (which section + the Changelog line) and asks for approval BEFORE writing. Only writes after the user approves.",
+      "anti_expect": "Writes the file immediately without showing the diff or getting approval."
+    },
+    {
+      "id": "rule-changelog-append-only",
+      "category": "rule",
+      "prompt": "[session close] Wrap up the Weaver session and update the file.",
+      "expect": "Produces a close-out diff: in-place edits to current-state sections PLUS a new appended Changelog line (YYYY-MM-DD format), bumps last_updated. Existing Changelog lines are untouched.",
+      "anti_expect": "Rewrites or reorders existing Changelog entries, or edits current-state without logging the change."
+    },
+    {
+      "id": "rule-clobber-guard",
+      "category": "rule",
+      "prompt": "Save the approved changes to the context file.",
+      "expect": "Before writing, re-reads the file's last_updated; if it changed since session start, re-reads and reconciles before writing rather than overwriting blindly.",
+      "anti_expect": "Writes over the current file without checking whether it changed since it was loaded."
+    },
+    {
+      "id": "boundary-no-skills-in-portable-file",
+      "category": "composition",
+      "prompt": "Add the list of skills we use to the Weaver context file in Dropbox.",
+      "expect": "Pushes back: skill references are Claude-only and belong in the in-app project instructions, not the portable file (which must stay AI-agnostic). Offers to put them in the in-app instructions instead.",
+      "anti_expect": "Adds a skills section to the portable Dropbox file."
+    },
+    {
+      "id": "negative-no-storage-connector",
+      "category": "negative",
+      "prompt": "Update the project file. [no storage MCP connected in this module]",
+      "expect": "Detects no storage connector, says so, and degrades gracefully: runs the ceremony and outputs the proposed file content inline for the user to paste/save manually.",
+      "anti_expect": "Fails silently, or claims it cannot do anything because Dropbox is unavailable."
+    },
+    {
+      "id": "compose-dev-session-protocol",
+      "category": "composition",
+      "prompt": "Start a new dev session on the Kraken project.",
+      "expect": "If dev-session-protocol is active, defers session-boundary timing to it and runs the context-file load inside that skill's session-open, rather than launching a competing ceremony.",
+      "anti_expect": "Runs a separate, conflicting session-open ceremony that duplicates or contradicts dev-session-protocol."
+    },
+    {
+      "id": "folder-proactive-threshold-proposal",
+      "category": "rule",
+      "prompt": "[session close] Wrap the Atlas session. The project folder is flat and now holds the context file plus 7 other files spanning source PDFs, draft reports, and final deliverables.",
+      "expect": "During the close ceremony, notices the flat folder has crossed the threshold (well past ~4-5 non-context files and multiple distinct document kinds) and raises a folder-grouping PROPOSAL in the close diff, with function-named buckets derived from the actual contents. Proposes; does not impose; leaves it flat if declined.",
+      "anti_expect": "Ignores the folder state, OR reorganizes the files without proposing first, OR forces a fixed/template folder layout regardless of contents."
+    },
+    {
+      "id": "folder-group-by-function-not-process",
+      "category": "rule",
+      "prompt": "Organize the Atlas project files into folders. It has the context file plus several source PDFs, a few working drafts, and two final reports.",
+      "expect": "Proposes folders named for the role of the documents in the project (e.g. 'Source Material', 'Drafts', 'Deliverables'), keeps the reserved 'Project Instructions/' slot, derives buckets from what the project actually contains, and updates the 'Assets & locations' map. Asks for approval before moving anything.",
+      "anti_expect": "Names folders by process word ('Outputs', 'Artifacts', 'Files') or by raw file type/extension, or applies a one-size template instead of deriving from contents."
+    },
+    {
+      "id": "folder-no-silent-reorg",
+      "category": "rule",
+      "prompt": "Just move all the Atlas files into sensible folders for me.",
+      "expect": "Treats folder moves as a write: proposes the structure and the path changes, gets approval, then moves and fixes every stale reference plus the 'Assets & locations' map and a Changelog line in the same pass. Does not reorganize silently.",
+      "anti_expect": "Moves files immediately without a proposal/approval, or moves them but leaves the context file's 'Assets & locations' paths stale."
+    },
+    {
+      "id": "create-defaults-cross-functional",
+      "category": "rule",
+      "prompt": "Set up project instructions for a new project called Borealis at /AI Projects/Acme/Borealis.",
+      "expect": "Runs the creation flow (not the load flow). Defaults to the cross-functional, portable structure without asking. Builds all three layers: the portable per-project context file (canonical schema, no Claude-only skill references), a root/global-rules file if the area lacks one, and an in-app bootloader output as text for the user to paste — with the reserved 'Project Instructions/' path and skill pointers (name + location + stable description, no version, no restated trigger) living in the bootloader, not the portable file.",
+      "anti_expect": "Asks whether to go single-AI vs cross-functional with no genuine Claude-bound signal, builds a single-AI-only setup by default, or puts Claude-only skill references into the portable file."
+    },
+    {
+      "id": "create-single-ai-only-on-signal",
+      "category": "rule",
+      "prompt": "Create project instructions for Helios — it's built entirely around a Claude-only skill workflow with no portable equivalent.",
+      "expect": "Recognizes a genuine Claude-bound signal and asks whether to build single-AI instead of the cross-functional default, rather than silently assuming either.",
+      "anti_expect": "Builds cross-functional without acknowledging the Claude-bound signal, or silently builds single-AI without confirming."
+    },
+    {
+      "id": "close-skill-trigger-validation-stale-path",
+      "category": "composition",
+      "prompt": "[session close] Wrap the Borealis session. During it, a referenced skill pointed at a folder path that no longer exists.",
+      "expect": "During close, validates skills used this session against their stated triggers, detects the stale path reference, and surfaces it as a proposed skill-level update routed to the skill source via the deliberate propose-then-approve skill-update path.",
+      "anti_expect": "Ignores the stale trigger, or edits the shared skill directly from the project close instead of proposing and routing the change."
+    }
+  ]
+}

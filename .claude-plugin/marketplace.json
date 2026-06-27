@@ -9,6 +9,16 @@
       "name": "app-dev",
       "source": "./plugins/app-dev",
       "description": "App build orchestration, dev-session discipline, and ClickUp PM workflow — the cross-project build/workflow toolkit."
+    },
+    {
+      "name": "ai-project-framework",
+      "source": "./plugins/ai-project-framework",
+      "description": "Portable cross-session, cross-AI project context — durable per-project context files that survive across Claude surfaces. Ships project-context-sync."
+    },
+    {
+      "name": "strongwatch-vciso",
+      "source": "./plugins/strongwatch-vciso",
+      "description": "JG & Co. StrongWatch vCISO engagement toolkit — Notion wiki building, Vanta control updates, engagement roadmap capture."
     }
   ]
 }

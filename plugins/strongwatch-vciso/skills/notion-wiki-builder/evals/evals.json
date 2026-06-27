@@ -1,0 +1,42 @@
+{
+  "skill": "notion-wiki-builder",
+  "version": "2.0",
+  "cases": [
+    {
+      "id": "trigger-build-page",
+      "prompt": "Build a wiki page documenting how we have Granola set up.",
+      "expect": "Fires the skill. Confirms surface (Project Setup), then reads live 00 Page Type Selection Guide to pick the template (Tool / Platform Configuration), opens the template page and a worked example, and builds with a Maturity + Last-updated banner. Does not build structure from memory.",
+      "type": "trigger"
+    },
+    {
+      "id": "rule-read-live-first",
+      "prompt": "Just use the Overview / Structure & Contents / Build Plan pattern like before.",
+      "expect": "Does not assume that fixed 3-part shape. Explains structure comes from the live 00 Page Type Selection Guide; that old shape is just the Capability Hub template, one of several. Reads 00 to pick the smallest fitting template for this page.",
+      "type": "rule"
+    },
+    {
+      "id": "rule-offline-fallback-flagged",
+      "prompt": "Notion isn't connected right now, but draft the Vanta wiki page anyway.",
+      "expect": "Builds from references/00-snapshot.md (the dated essentials-only fallback) and explicitly states in the output that it used the offline snapshot rather than live 00, noting it should be reconciled against live 00 when Notion is reachable. Does not silently proceed as if live 00 was read.",
+      "type": "rule"
+    },
+    {
+      "id": "rule-repository-vs-mechanism",
+      "prompt": "On the Vanta platform page, paste in the full step-by-step of how the A1 snapshot automation works.",
+      "expect": "Declines to embed automation mechanics in the tool/platform page. Applies the repository-vs-mechanism rule: the platform page links to the A1 automation page; mechanics live there. Keeps one source of truth.",
+      "type": "rule"
+    },
+    {
+      "id": "composition-not-vanta",
+      "prompt": "Update the implementation details on this control in Vanta.",
+      "expect": "Defers to vanta-control-updater; this skill governs Notion wiki page authoring, not in-Vanta control updates. Recognizes the composition boundary.",
+      "type": "composition"
+    },
+    {
+      "id": "negative-advisory-operational",
+      "prompt": "Write this week's client status update as a page.",
+      "expect": "Recognizes a live operational deliverable belongs on the Strongwatch CMMC Advisory surface, not the Project Setup wiki. Does not build it as a Project Setup setup/config page; routes to the operational surface.",
+      "type": "negative"
+    }
+  ]
+}

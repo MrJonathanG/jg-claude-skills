@@ -22,15 +22,28 @@ run structured dev sessions, or track work in ClickUp.
 | `clickup-pm-workflow` | `plugins/app-dev/skills/clickup-pm-workflow/` | ClickUp project-tracking conventions — status vocabulary, hierarchy, milestone naming, closeout/outcome-evidence rules. |
 | `dev-session-protocol` | `plugins/app-dev/skills/dev-session-protocol/` | Session boundary discipline — opener, close audit, and a close summary that doubles as the next-session handoff. |
 
-## Planned domains (not yet in the repo)
+### `ai-project-framework` — `plugins/ai-project-framework/`
+Portable, cross-session, cross-AI project context. Durable per-project context
+files (Dropbox-first) that survive across Claude surfaces and other AIs.
 
-Your own plugins that already exist as installed plugins and are the natural next
-domains to bring into this marketplace. Add each as `plugins/<domain>/` with its
-own `plugin.json` (omit `version`) and a `marketplace.json` entry. Confirm each
-one's current source of truth before importing, so this becomes their home rather
-than a second drifting copy.
-
-| Domain plugin | Source today | Notes |
+| Skill | Location | Stable description |
 |---|---|---|
-| `ai-project-framework` | Installed plugin (author: Jonathan / JG & Co.), currently pins `version` 0.1.0 | Contains `project-context-sync`. Drop the pinned version on import. |
-| `strongwatch-vciso` | Installed plugin (author: JG & Co. LLC), currently pins `version` 0.5.0 | StrongWatch vCISO engagement toolkit (Notion wiki, Vanta, roadmap). Drop the pinned version on import. |
+| `project-context-sync` | `plugins/ai-project-framework/skills/project-context-sync/` | Keeps a project's living context in sync across sessions and surfaces — propose-then-approve load/close, append-only changelog, clobber guard. |
+
+### `strongwatch-vciso` — `plugins/strongwatch-vciso/`
+JG & Co. StrongWatch vCISO engagement toolkit. Also ships the
+`new-wiki-page` command (`plugins/strongwatch-vciso/commands/`).
+
+| Skill | Location | Stable description |
+|---|---|---|
+| `notion-wiki-builder` | `plugins/strongwatch-vciso/skills/notion-wiki-builder/` | Builds/formats Notion pages to the StrongWatch vCISO engagement wiki standard. |
+| `notion-page-dedup-check` | `plugins/strongwatch-vciso/skills/notion-page-dedup-check/` | Validate-before-create discipline for Notion pages — search for an existing page first, route to append-over-create. |
+| `roadmap-capture` | `plugins/strongwatch-vciso/skills/roadmap-capture/` | Captures engagement workstream items into the StrongWatch Engagement Roadmap database; answers roadmap read queries. |
+| `vanta-control-updater` | `plugins/strongwatch-vciso/skills/vanta-control-updater/` | Updates/maintains StrongWatch CMMC controls in Vanta to one consistent standard. |
+
+---
+
+These three plugins were previously scattered across per-session build folders and
+the app's plugin cache with no published source. This marketplace is now their
+single home; the pinned `version` fields were dropped so each tracks the current
+commit (see [`standards/change-control.md`](standards/change-control.md)).

@@ -8,6 +8,8 @@
     }
   },
   "enabledPlugins": {
-    "app-dev@jg-skills": true
+    "app-dev@jg-skills": true,
+    "ai-project-framework@jg-skills": true,
+    "strongwatch-vciso@jg-skills": true
   }
 }
