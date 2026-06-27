@@ -1,28 +1,36 @@
 # Skill Registry — index
 
-The authoritative index of skills in this registry. One row per skill:
-**name → path → stable one-line description.** The description is the *stable
-purpose* of the skill — not its trigger (the trigger lives in each skill's
-`SKILL.md` `description` frontmatter) and not a restatement of its steps.
+Human-readable map of what's in this marketplace: which **domain plugins** exist
+and which **skills** each contains. This is a readable index, not the routing
+mechanism — `.claude-plugin/marketplace.json` and each `plugin.json` do the
+actual routing. Projects enable plugins via `settings.json` (see
+[`standards/plugin-enablement.md`](standards/plugin-enablement.md)).
 
-Projects reference these by pointer (name + location + this description). See
-[`standards/pointer-rule.md`](standards/pointer-rule.md). The daily sync routine
-checks that this table matches the actual `skills/` contents.
+The one-line description is the skill's *stable purpose* — not its trigger (the
+trigger lives in each `SKILL.md` `description` frontmatter) and not a restatement
+of its steps.
+
+## Plugins
+
+### `app-dev` — `plugins/app-dev/`
+Cross-project build & workflow toolkit. Enable on projects that build software,
+run structured dev sessions, or track work in ClickUp.
 
 | Skill | Location | Stable description |
 |---|---|---|
-| `app-build-orchestrator` | `skills/app-build-orchestrator/` | Orchestrates end-to-end builds across Anthropic's product surfaces (Chat, Code, Cowork, Chrome, Office, artifacts, MCP). |
-| `clickup-pm-workflow` | `skills/clickup-pm-workflow/` | ClickUp project-tracking conventions — status vocabulary, hierarchy, milestone naming, closeout/outcome-evidence rules. |
-| `dev-session-protocol` | `skills/dev-session-protocol/` | Session boundary discipline — opener, close audit, and a close summary that doubles as the next-session handoff. |
+| `app-build-orchestrator` | `plugins/app-dev/skills/app-build-orchestrator/` | Orchestrates end-to-end builds across Anthropic's product surfaces (Chat, Code, Cowork, Chrome, Office, artifacts, MCP). |
+| `clickup-pm-workflow` | `plugins/app-dev/skills/clickup-pm-workflow/` | ClickUp project-tracking conventions — status vocabulary, hierarchy, milestone naming, closeout/outcome-evidence rules. |
+| `dev-session-protocol` | `plugins/app-dev/skills/dev-session-protocol/` | Session boundary discipline — opener, close audit, and a close summary that doubles as the next-session handoff. |
 
-## Pending / not yet mirrored
+## Planned domains (not yet in the repo)
 
-Skills known to exist on a synced install but **not yet mirrored into this repo**.
-They are intentionally kept out of the table above (and off the `skills/<name>/`
-path pattern) so reconciliation stays green for what's actually present. Move a
-row up into the table once its body is committed and verified to match the
-running install.
+Your own plugins that already exist as installed plugins and are the natural next
+domains to bring into this marketplace. Add each as `plugins/<domain>/` with its
+own `plugin.json` (omit `version`) and a `marketplace.json` entry. Confirm each
+one's current source of truth before importing, so this becomes their home rather
+than a second drifting copy.
 
-| Skill | Source | Status |
+| Domain plugin | Source today | Notes |
 |---|---|---|
-| `project-context-sync` | local synced Claude install (`~/.claude/skills/project-context-sync/`) | **Not in repo.** Recently edited on one machine (folder-organization guidance, a create-project-instructions entry path, skill-trigger validation in the close ceremony). This cloud session cannot reach that local install to mirror it — see the open decision in the PR / session notes. |
+| `ai-project-framework` | Installed plugin (author: Jonathan / JG & Co.), currently pins `version` 0.1.0 | Contains `project-context-sync`. Drop the pinned version on import. |
+| `strongwatch-vciso` | Installed plugin (author: JG & Co. LLC), currently pins `version` 0.5.0 | StrongWatch vCISO engagement toolkit (Notion wiki, Vanta, roadmap). Drop the pinned version on import. |

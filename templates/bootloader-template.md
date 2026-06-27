@@ -1,35 +1,33 @@
 # Bootloader (template)
 
 A short preamble a project puts at the top of its instructions (or a pinned
-message) to orient Claude to the central registry before any work starts. It
-tells Claude *where skills live* and *how to treat them* — it does not copy
-skills in.
+message) to orient Claude to the marketplace before any work starts. It tells
+Claude *where skills come from* and *how to treat them* — it does not copy skills
+in. Keep it stable; it encodes the architecture, not the contents.
 
 ---
 
 ```
-## Skill registry
+## Skills
 
-This project uses skills from the central registry: jg-claude-skills
-(https://github.com/mrjonathang/jg-claude-skills). Rules:
+This project's skills come from the private jg-skills marketplace
+(github.com/mrjonathang/jg-claude-skills), enabled in .claude/settings.json.
+Rules:
 
-- Skill BODIES live in the registry under skills/<name>/. Never copy a body
-  into this project; reference it by pointer.
-- Pointers are name + location + a stable one-line description. They FLOAT
-  (track the current skill) — no version pins except via a frozen location.
+- Skills are distributed as PLUGINS. This project enables the domains it needs
+  via "enabledPlugins" (e.g. "app-dev@jg-skills": true). It never copies a skill
+  body in.
+- Plugins omit versions, so they FLOAT — the project tracks the current skill and
+  gets improvements automatically. Pin only deliberately (see change-control.md).
 - A skill's activation trigger lives in its own SKILL.md `description`. Do not
-  restate triggers here.
-- Skills used by this project are listed in the "Skills this project uses"
-  section below (see templates/project-instructions-template.md).
+  restate triggers in project instructions.
 
-When a skill seems out of date or its pointer description no longer matches the
-registry body, surface it — do not edit the registry body from this project.
-Shared-skill changes are propose-then-approve in the registry repo.
+When a skill seems out of date, surface it — don't edit the marketplace body from
+this project. Changes to shared skills go through the marketplace repo
+(branch → PR → merge).
 ```
 
 ---
 
-Fill in the "Skills this project uses" list from
-[`project-instructions-template.md`](project-instructions-template.md). Keep
-this bootloader stable; it should rarely change because it encodes the
-*architecture*, not the *contents*.
+Fill in which domains this project enables from
+[`project-instructions-template.md`](project-instructions-template.md).

@@ -1,41 +1,48 @@
 # Project instructions — skills section (template)
 
-Drop this block into a project's instructions to reference registry skills.
-Copy the registry's canonical pointer form — **name + location + stable
-one-liner**. No version, no restated trigger.
+How a project uses skills from the `jg-skills` marketplace. Skills are
+distributed as **plugins**; the project enables the domains it needs in its
+`.claude/settings.json`. No skill bodies are copied in; no triggers are restated.
 
 ---
 
-## Skills this project uses
+## 1. Enable the plugins (`.claude/settings.json`)
 
-Skills are referenced by pointer. Bodies live in the central registry
-(`jg-claude-skills`); this project never copies them in. Pointers **float** —
-they track the current skill, so registry improvements arrive automatically.
-The precise activation trigger for each skill lives in its body, not here.
+```json
+{
+  "extraKnownMarketplaces": {
+    "jg-skills": { "source": { "source": "github", "repo": "mrjonathang/jg-claude-skills" } }
+  },
+  "enabledPlugins": {
+    "app-dev@jg-skills": true,
+    "ai-project-framework@jg-skills": false,
+    "ibm@jg-skills": false
+  }
+}
+```
 
-<!-- One bullet per skill. name — `location/` then a stable one-line purpose. -->
+Set each domain plugin `true` (this project uses it) or `false` (it doesn't).
+Plugins omit versions, so the project always tracks the current skill — registry
+improvements arrive automatically.
 
-- **<skill-name>** — `jg-claude-skills/skills/<skill-name>/`
-  <stable one-line description of what the skill is for>
+## 2. (Optional) Note which domains this project uses, for humans
 
-- **dev-session-protocol** — `jg-claude-skills/skills/dev-session-protocol/`
-  Session boundary discipline — opener, close audit, and next-session handoff.
+A short prose note in the project's instructions helps teammates:
 
-- **clickup-pm-workflow** — `jg-claude-skills/skills/clickup-pm-workflow/`
-  ClickUp tracking conventions — status vocabulary, hierarchy, closeout rules.
+> This project uses the **app-dev** plugin (build orchestration, dev-session
+> discipline, ClickUp workflow). Each skill's activation trigger lives in its own
+> `SKILL.md`; they fire automatically when relevant.
 
 <!--
-DO NOT, in this block:
-  - add a version/pin field      → pointers float; pin via a frozen location only
-  - restate the trigger          → the trigger lives in the skill's SKILL.md
-  - paste any skill body          → bodies live once, in the registry
-See jg-claude-skills/standards/pointer-rule.md.
+DO NOT, in project instructions:
+  - paste any skill body            → bodies live once, in the marketplace
+  - restate a skill's trigger        → the trigger lives in the skill's SKILL.md
+  - add a version pin                → plugins float; pin only via change-control.md
+See jg-claude-skills/standards/plugin-enablement.md.
 -->
 
-### Pinning (rare)
+## Pinning (rare)
 
-If this project must freeze a skill at a specific state, point at a **frozen
-location** instead of the live path, and record why and until when here:
-
-- **<skill-name>** — `jg-claude-skills/skills/_frozen/<skill-name>@<ref>/`
-  Pinned because <reason>; revisit by <date>. (See standards/change-control.md.)
+If this project must freeze a plugin at a specific state, pin it deliberately
+(version field or a frozen source ref) and record why and until when here. See
+[`../standards/change-control.md`](../standards/change-control.md).

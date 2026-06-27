@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "jg-skills": {
+      "source": {
+        "source": "github",
+        "repo": "mrjonathang/jg-claude-skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "app-dev@jg-skills": true
+  }
+}
