@@ -11,7 +11,7 @@ in. Keep it stable; it encodes the architecture, not the contents.
 ## Skills
 
 This project's skills come from the private jg-skills marketplace
-(github.com/mrjonathang/jg-claude-skills), enabled in .claude/settings.json.
+(github.com/MrJonathanG/jg-claude-skills), enabled in .claude/settings.json.
 Rules:
 
 - Skills are distributed as PLUGINS. This project enables the domains it needs

@@ -19,7 +19,7 @@ Add to the project's `.claude/settings.json`:
 ```json
 {
   "extraKnownMarketplaces": {
-    "jg-skills": { "source": { "source": "github", "repo": "mrjonathang/jg-claude-skills" } }
+    "jg-skills": { "source": { "source": "github", "repo": "MrJonathanG/jg-claude-skills" } }
   },
   "enabledPlugins": { "app-dev@jg-skills": true }
 }
