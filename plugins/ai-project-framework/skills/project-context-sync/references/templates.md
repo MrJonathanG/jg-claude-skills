@@ -13,7 +13,7 @@ One file per project. Lives at the storage standard path:
 ---
 title: "<Project> — Project Instructions & Context"
 project: "<short project name>"
-area: "<parent area, e.g. IBM>"
+area: "<parent area>"
 status: "<active | paused | complete>"
 last_updated: "YYYY-MM-DD"
 doc_type: "project-context / cross-session reference"
@@ -35,35 +35,44 @@ tags: [area, project, ...]
 - Who/what is involved; scope boundaries; resolved decisions stated as facts.
 
 ## 4. Assets & locations
-- Every deliverable, file, and folder with its FULL path. So any session can find them.
+| Artifact | Storage | Location — `<storage system / MCP> (<account or scope>) : <full path>` | Notes |
+|---|---|---|---|
+| <deliverable / file / folder> | <cloud storage / git repo / AI platform> | <storage system / MCP> (<account or scope>) : <full path> | <what it is> |
+
+Every deliverable, file, and folder appears here so any session can find it. The **Storage** column names which surface holds each item (cloud storage / git repo / the AI platform itself); name the surface, not just the path (see "Name the location, not just the path" in `SKILL.md`). Update this table in the same write whenever a file moves.
 
 ## 5. Open items
 - Unresolved questions and decisions. Each item one line. Remove when resolved (and log in Changelog).
 
 ## 6. How to use (for future AIs / sessions)
 - Precedence rules, the must-not-lose anchors, anything an incoming session needs to not break the thread.
+- **Governing disciplines (plain language):** one line per rule the project operates by, so any AI behaves consistently even if it cannot run the skills. Example: "Never write the context file without proposing a diff and getting approval first."
+- **Skills that enforce them:** one line per governing skill — name + canonical repo location, e.g. `project-context-sync — <repo> : skills/project-context-sync/SKILL.md`. A platform where these skills auto-load uses them directly; any other AI reads the source at that path and applies the discipline by hand.
 
 ## Changelog
 <!-- APPEND ONLY. One line per change. Never rewrite existing lines. -->
 - YYYY-MM-DD · created · initial context captured
 ```
 
-**Note:** no "skills / tooling" section. Skill references are Claude-only and live in the in-app project instructions (layer 1), keeping this file portable to any AI.
+**Note:** the portable file MAY name the project's governing skills when they live where any AI can reach them (e.g. a git repo) — listed by name + access path in "How to use", each paired with a plain-language discipline. What stays platform-specific is the auto-load mechanism, not the knowledge that the skills exist. Do not paste skill bodies or pin versions here; point to the canonical repo location.
 
 ---
 
 ## 2. Root directory + global rules — template
 
-Lives at the parent-area root, e.g. `/AI Projects/IBM/README.md` (or `_GLOBAL.md`). Portable, AI-agnostic.
+Lives at the parent-area root, e.g. `<storage system / MCP> (<account or scope>) : /<area>/README.md` (or `_GLOBAL.md`). Portable, AI-agnostic.
 
 ```markdown
 # <Area> — project directory & global rules
 
 ## Projects
-| Project | Folder location |
+| Project | Location — `<storage system / MCP> (<account or scope>) : <full path>` |
 |---|---|
-| <Project A> | /AI Projects/<Area>/<Folder A> |
-| <Project B> | /AI Projects/<Area>/<Folder B> |
+| <Project A> | <storage system / MCP> (<account or scope>) : /<area>/<Folder A> |
+| <Project B> | <storage system / MCP> (<account or scope>) : /<area>/<Folder B> |
+
+Name the storage system / MCP alongside the path: a bare path does not say which system or
+account holds the folder, and different AIs reach different systems.
 
 Each project folder contains a project-instructions file in its "Project Instructions"
 subfolder, following the project-context-sync schema.
@@ -77,30 +86,36 @@ subfolder, following the project-context-sync schema.
 
 ---
 
-## 3. In-app project instructions — template (Claude project settings)
+## 3. In-app project instructions — universal portable bootloader
 
-Thin bootloader. This is the ONLY place skill references live.
+Drop-in for ANY AI app's project-instructions field (Claude projects and the equivalent
+feature in other AI apps). The **universal body** is identical for every AI; only the short
+**platform notes** differ, and each AI applies just the line that fits its capability. Keep it
+to a handful of lines — never a copy of the context file.
 
 ```
-This project manages several project objectives. Context for each lives in its
-storage folder as a project-instructions file (see the project-context-sync skill).
+# <project or area> — context bootloader
 
-Projects & folder locations:
-- <Project A> : /AI Projects/<Area>/<Folder A>
-- <Project B> : /AI Projects/<Area>/<Folder B>
+Purpose: this project's living context is maintained as a file in storage; load it before working.
 
-Global rules: see the directory/README at /AI Projects/<Area>/README.md
+Context file:
+- <storage system / MCP> (<account or scope>) : /<area>/<project>/Project Instructions/<name>_Project_Instructions.md
+  (Name the storage system / MCP, not just the path — reachability differs by AI and surface.)
 
-Global skills used across these projects:
-- project-context-sync   (load/update project context)
-- <domain skill, e.g. ibm-deck-themes>
-- <other skills>
+If you cannot reach the context file, proceed on these essentials only:
+- Scope: work only within <this project's scope>; if unsure, ask.
+- Core discipline: <the project's one load-bearing rule, e.g. propose a diff and get approval before writing>.
+- Producer/executor split: one side proposes, the other approves and executes; no silent writes.
+- Skills live in the repo: <repo> : skills/<name>/SKILL.md — read them there if your platform cannot auto-load them.
 
-Standard: every project folder contains a project-instructions file in its
-"Project Instructions" subfolder, following the project-context-sync schema.
-At session start, confirm the project, load its file, and run the close
-ceremony before ending.
+Platform notes (apply only the line that fits you):
+- On a platform where these skills are installed and auto-load by name, use them directly.
+- Otherwise, read the same skills from the repository at the named path and apply the discipline manually.
 ```
+
+The universal body (purpose, pointer, fallback) reads the same for every AI. The platform-notes
+block is the only place platform-specific capability appears, written by capability ("a platform
+where the skills auto-load") rather than by product name, so the template stays portable.
 
 ---
 
@@ -147,8 +162,8 @@ On approval → clobber-guard check → edit in place + append Changelog + bump 
 ## 5. Style spec (enforce on every write)
 
 - Sentence case; no em-dash.
-- Decisions as resolved facts, not narrative ("EMC = 1.0 FTE", not "we discussed and thought maybe").
-- Full paths always (`/AI Projects/IBM/...`), never "the folder".
+- Decisions as resolved facts, not narrative ("scope = two workstreams", not "we discussed and might do two").
+- Locations named with storage system / MCP + full path (`<storage / MCP> (<scope>) : /<area>/...`), never "the folder".
 - One Changelog line per change; format `YYYY-MM-DD · what · why/source`.
 - Current-state sections describe the present only. History belongs in the Changelog.
 - Keep it simple and scannable — this file is re-read into every session; bloat costs every time.

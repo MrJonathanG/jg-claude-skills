@@ -1,6 +1,6 @@
 ---
 name: project-context-sync
-description: Portable, cross-session, cross-AI project context management. Keeps a durable per-project context file in cloud storage (Dropbox-first; also Box, Google Drive, local) so project state survives across Claude surfaces (Chat, Code, Cowork, Design) and other AIs. Apply when the user names a project to work in ("we're working in Weaver", "load the TMA project", "switch to Strongwatch"), starts or closes a project session, says "update the project instructions / context / file", or asks to create / set up project instructions for a new project. Runs propose-then-approve ceremonies (session-start load, new-project creation, session-close reconcile) plus real-time updates on cue. Organizes each project's storage folder per-project (derived, not templated) and validates skill triggers at session close. Never writes silently: verify, propose a diff, get approval, then write. Edits current-state sections in place, appends to a never-overwritten Changelog, uses a clobber guard against concurrent edits. Composes with dev-session-protocol (defers session timing to it when active) and domain packs like ibm-deck-themes. The portable file holds no Claude-only skill references; those live in the in-app project instructions.
+description: Portable, cross-session, cross-AI project context management. Keeps a durable per-project context file in cloud storage (any connected cloud-storage or file MCP, or local) so project state survives across Claude surfaces (Chat, Code, Cowork, Design) and other AIs. Apply when the user names a project to work in ("we're working in Weaver", "load the TMA project", "switch to Strongwatch"), starts or closes a project session, says "update the project instructions / context / file", or asks to create / set up project instructions for a new project. Runs propose-then-approve ceremonies (session-start load, new-project creation, session-close reconcile) plus real-time updates on cue. Organizes each project's storage folder per-project (derived, not templated) and validates skill triggers at session close. Never writes silently: verify, propose a diff, get approval, then write. Edits current-state sections in place, appends to a never-overwritten Changelog, uses a clobber guard against concurrent edits. Composes with dev-session-protocol (defers session timing to it when active) and domain packs. When the governing skills live where any AI can reach them (e.g. a git repository), the portable file may name them by access path and state each one's discipline in plain language; what is platform-specific is the auto-load mechanism, not the knowledge that the skills exist. The in-app instructions are themselves a portable bootloader, reusable verbatim in any AI app's project-instructions field.
 ---
 
 # Project Context Sync
@@ -11,9 +11,13 @@ For full templates (per-project file schema, root directory + global-rules templ
 
 ## The three layers (know which is which)
 
-1. **In-app project instructions** (Claude project settings) — the bootloader. Holds: a one-line purpose, the **directory** (project name → storage folder path), the **global skills list** (skills are Claude-only, so they live here, never in the portable file), and a pointer to the storage standard. Template in `references/templates.md`.
-2. **Root directory + global rules file** (cloud storage, e.g. `/AI Projects/<area>/README.md` or `_GLOBAL.md`) — portable, AI-agnostic. Holds the project directory and the global behavior rules (e.g. no em-dash, style preferences) that any AI should honor.
-3. **Per-project context file** (one per project, e.g. `/<area>/<project>/Project Instructions/<name>_Project_Instructions.md`) — the portable context. Current-state body edited in place + append-only Changelog. **No skill references** (Claude-only; those live in layer 1).
+1. **In-app project instructions** — the **portable bootloader**. It is itself universal: the same minimal pointer drops verbatim into any AI app's project-instructions field (Claude projects and the equivalent feature in other AI apps), so its body carries no platform-specific mechanics. By rule it holds only: a one-line purpose; a **reachability-aware pointer** to the context file (the storage system / MCP *and* the full path); a short graceful-degradation **fallback** carrying only the load-bearing essentials (the scope guard, the project's core discipline, the producer/executor split of who proposes vs. who approves and executes, and where the skills live in the repo) so the bootloader never hard-fails when storage is unreachable; and a short **platform-notes** block (see the layer-1 template in `references/templates.md`). Minimal by rule — a handful of lines, never a copy of the context file.
+2. **Root directory + global rules file** (cloud storage, e.g. `<storage system / MCP> (<account or scope>) : /<area>/README.md`) — portable, AI-agnostic. Holds the project directory and the global behavior rules (e.g. no em-dash, style preferences) that any AI should honor.
+3. **Per-project context file** (one per project, e.g. `/<area>/<project>/Project Instructions/<name>_Project_Instructions.md`) — the portable context. Current-state body edited in place + append-only Changelog. It **may** name the project's governing skills **when they live where any AI can reach them** (e.g. a git repository): list each by name and access path (repo + in-repo path such as `skills/<name>/SKILL.md`) so a non-Claude AI can read the source and apply the discipline by hand, and pair each with a one-line plain-language statement of its discipline. What is platform-specific is the **auto-load mechanism** — a host platform auto-loads installed skills by name; other AIs read the same skills from the repo — not the knowledge that the skills exist.
+
+## Disciplines are portable; the skills that enforce them may not be
+
+Skills are universal artifacts: always point to a skill's **canonical repository location** (repo + in-repo path such as `skills/<name>/SKILL.md`) so any AI on any surface can retrieve and apply it. But a skill's *enforcement mechanism* (auto-loading and running it) is not portable, while the *discipline it enforces* is. So for each governing skill the portable file carries two separate things: the **skill reference** (name + access path — the mechanism) and a **one-line plain-language statement of the discipline** it enforces (the rule). An AI that cannot run the skill still reads the rule and behaves consistently.
 
 ## Ceremonies + real-time, all propose-then-approve
 
@@ -31,11 +35,11 @@ When the user asks to **create** project instructions for a new project (as oppo
 **Default to the cross-functional, portable structure.** It works for any AI (Claude, ChatGPT, others) and degrades gracefully to single-AI use. A single-AI-only setup does not port, so portable is the safe default. Build single-AI instead only when there is a genuine signal the project is Claude-bound (e.g. it depends on Claude-only tooling with no portable equivalent) — ask in that case; otherwise build cross-functional without asking.
 
 Build all three layers (full templates in `references/templates.md`):
-1. **Per-project context file** (portable, in storage) — canonical schema; holds durable context, constraints, inventory/assets, decisions, open items, changelog. No Claude-only skill references.
+1. **Per-project context file** (portable, in storage) — canonical schema; holds durable context, constraints, inventory/assets, decisions, open items, changelog. When the governing skills live in an any-AI-reachable repo, it names them (by name + access path) and states each one's discipline in plain language.
 2. **Root / global-rules file** (only if the area lacks one) — portable behavior rules for the area.
-3. **In-app bootloader** — output as text for the user to paste into project settings. Thin pointer: purpose, storage location, the reserved `Project Instructions/` path, and the skill-pointer list. Claude-only skill references live **here**, never in the portable file.
+3. **In-app bootloader** — output as text for the user to paste into any AI app's project-instructions field. Minimal by rule: a one-line purpose; a reachability-aware pointer to the context file (storage system / MCP + full path); a short fallback; and a short platform-notes block. The body is the same universal pointer for every AI.
 
-**Pointer rule** (bootloader and context): reference shared skills by **name + location** (plus a short, stable description) — never copy a skill's body, never pin a version, never restate a skill's precise trigger. The precise trigger lives inside each skill; pointers carry only stable info.
+**Pointer rule** (any layer that references a skill): reference shared skills by **name + canonical repository location** (repo + in-repo path such as `skills/<name>/SKILL.md`) plus a short stable description — never copy a skill's body, never pin a version, never restate a skill's precise trigger (the precise trigger lives inside each skill). Pair each reference with a one-line plain-language statement of the discipline it enforces, so an AI that cannot run the skill can still apply the rule.
 
 ### Real-time update (on cue)
 When the user says "update the instructions / context": state exactly *what* will change and *where* (the verify step) → on approval, write.
@@ -59,8 +63,8 @@ Capture only **durable** changes — decisions, scope shifts, new assets, resolv
 
 ## Storage-agnostic operation
 
-- Dropbox-first, but the same read / write / verify pattern works with Box, Google Drive, or local files. Use whichever storage MCP is connected.
-- **Degrade gracefully:** if no storage connector is available in the current module, say so, and fall back to outputting the proposed file content inline for the user to paste/save manually. The ceremonies still run — only the write target changes.
+- Storage-agnostic by design: the same read / write / verify pattern works with any cloud storage or file MCP (and with local files). Use whichever storage system / MCP is connected, and name it explicitly wherever a location is recorded.
+- **Degrade gracefully:** if no storage connector is reachable in the current surface, say so, and fall back to outputting the proposed file content inline for the user to paste/save manually. The ceremonies still run — only the write target changes.
 
 ## Folder organization (per-project, derived not templated)
 
@@ -82,14 +86,16 @@ Each project's storage folder must be organized intelligently for that project �
 
 ## Schema (strict default, documented flex)
 
-Per-project files follow the canonical schema in `references/templates.md`: YAML frontmatter → purpose line → At a glance → Current state/model → Roles/scope/decisions → Assets & locations (full paths) → Open items → How to use (for future AIs) → Changelog (append-only). Strict by default — reformat content to match. Flex is allowed when a project genuinely needs it, but **never lose content** to fit the schema. The "Assets & locations" section reflects the project's actual folder structure (see "Folder organization"); when files move, its paths update in the same write.
+Per-project files follow the canonical schema in `references/templates.md`: YAML frontmatter → purpose line → At a glance → Current state/model → Roles/scope/decisions → Assets & locations (storage/MCP + full path, table form) → Open items → How to use (for future AIs) → Changelog (append-only). Strict by default — reformat content to match. Flex is allowed when a project genuinely needs it, but **never lose content** to fit the schema. The "Assets & locations" section is a table mapping each artifact to its location and notes, with a **Storage** column naming which surface holds each item (cloud storage / git repo / the AI platform itself); it reflects the project's actual folder structure (see "Folder organization"), and when files move its paths update in the same write.
 
-Style spec (keeps files clean and consistent across AIs): sentence case; no em-dash; decisions stated as resolved facts, not narrative; full paths always; one Changelog line per change; current-state sections never narrate history (that is the Changelog's job).
+**Name the location, not just the path.** Everywhere a location is recorded (the layer-1 pointer, the layer-2 directory, the layer-3 assets table), name the storage system or MCP alongside the path, using the pattern `<storage system / MCP> (<account or scope>) : <full path>`. In multi-account, multi-service setups a bare path does not disambiguate which system or account holds the file, and different AIs reach different systems, so the reachable location must be explicit.
+
+Style spec (keeps files clean and consistent across AIs): sentence case; no em-dash; decisions stated as resolved facts, not narrative; locations named with storage/MCP + full path; one Changelog line per change; current-state sections never narrate history (that is the Changelog's job).
 
 ## Composition
 
 - **`dev-session-protocol`** — independent but interoperable. That skill owns session-boundary *timing* for code work. When it is active, run this skill's file load inside its session-open and the close reconcile inside its session-close, rather than starting a competing ceremony. When it is absent (non-code project), this skill runs its own start/close ceremonies.
-- **Domain packs (e.g. `ibm-deck-themes`)** — independent. Domain skills govern how deliverables look/behave; this skill governs the portable context file. They co-fire without conflict.
+- **Domain packs (e.g. a deck-theme or formatting pack)** — independent. Domain skills govern how deliverables look/behave; this skill governs the portable context file. They co-fire without conflict.
 - **`clickup-pm-workflow` / `notion-pm-workflow`** — independent. Those track tasks in a PM tool; this tracks portable narrative context in a file. Use both when the project has a tracker and a context file.
 
 ## When NOT to apply

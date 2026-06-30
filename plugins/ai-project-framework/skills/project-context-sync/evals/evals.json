@@ -38,18 +38,18 @@
       "anti_expect": "Writes over the current file without checking whether it changed since it was loaded."
     },
     {
-      "id": "boundary-no-skills-in-portable-file",
+      "id": "skills-in-portable-file-when-repo-reachable",
       "category": "composition",
-      "prompt": "Add the list of skills we use to the Weaver context file in Dropbox.",
-      "expect": "Pushes back: skill references are Claude-only and belong in the in-app project instructions, not the portable file (which must stay AI-agnostic). Offers to put them in the in-app instructions instead.",
-      "anti_expect": "Adds a skills section to the portable Dropbox file."
+      "prompt": "Add the list of skills we use to the project context file in storage.",
+      "expect": "Names the governing skills in the portable file by name + access path (repo + in-repo path such as skills/<name>/SKILL.md), each paired with a one-line plain-language discipline, since the skills live in an any-AI-reachable repo. Notes that what stays platform-specific is the auto-load mechanism, not the knowledge that the skills exist.",
+      "anti_expect": "Refuses on the basis that skill references cannot live in the portable file, OR pastes skill bodies / pins versions / restates triggers instead of pointing to the canonical repo location."
     },
     {
       "id": "negative-no-storage-connector",
       "category": "negative",
       "prompt": "Update the project file. [no storage MCP connected in this module]",
       "expect": "Detects no storage connector, says so, and degrades gracefully: runs the ceremony and outputs the proposed file content inline for the user to paste/save manually.",
-      "anti_expect": "Fails silently, or claims it cannot do anything because Dropbox is unavailable."
+      "anti_expect": "Fails silently, or claims it cannot do anything because storage is unavailable."
     },
     {
       "id": "compose-dev-session-protocol",
@@ -83,8 +83,8 @@
       "id": "create-defaults-cross-functional",
       "category": "rule",
       "prompt": "Set up project instructions for a new project called Borealis at /AI Projects/Acme/Borealis.",
-      "expect": "Runs the creation flow (not the load flow). Defaults to the cross-functional, portable structure without asking. Builds all three layers: the portable per-project context file (canonical schema, no Claude-only skill references), a root/global-rules file if the area lacks one, and an in-app bootloader output as text for the user to paste — with the reserved 'Project Instructions/' path and skill pointers (name + location + stable description, no version, no restated trigger) living in the bootloader, not the portable file.",
-      "anti_expect": "Asks whether to go single-AI vs cross-functional with no genuine Claude-bound signal, builds a single-AI-only setup by default, or puts Claude-only skill references into the portable file."
+      "expect": "Runs the creation flow (not the load flow). Defaults to the cross-functional, portable structure without asking. Builds all three layers: the portable per-project context file (canonical schema; names governing skills by access path with a one-line plain-language discipline when they live in an any-AI-reachable repo), a root/global-rules file if the area lacks one, and a universal portable in-app bootloader output as text for the user to paste (one-line purpose, reachability-aware pointer to the context file, a short fallback, and a short platform-notes block).",
+      "anti_expect": "Asks whether to go single-AI vs cross-functional with no genuine Claude-bound signal, builds a single-AI-only setup by default, or pastes skill bodies / pins versions into the portable file."
     },
     {
       "id": "create-single-ai-only-on-signal",

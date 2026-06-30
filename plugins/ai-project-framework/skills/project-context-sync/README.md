@@ -6,7 +6,7 @@ Portable, cross-session, cross-AI project context management. Keeps a durable pe
 
 Claude's native project instructions have three limits: they are per-module (Chat, Code, Cowork, and Design each have their own or none), they are static (the AI can read but not write them), and they don't travel to other AIs. The result is fragmented context — you re-explain the same project in every surface, and you hand-patch instructions whenever something changes.
 
-This skill inverts that. The source of truth becomes a file in cloud storage (Dropbox-first; also Box, Google Drive, or local) that every surface can read and write. The in-app instructions shrink to a thin pointer. The AI maintains the file through two propose-then-approve ceremonies — a session-start load and a session-close reconcile — plus real-time updates on cue. It never writes silently: it verifies, proposes a diff, gets your approval, then writes. Current-state sections are edited in place; a Changelog at the bottom is append-only; a clobber guard prevents one surface from silently overwriting another's edits.
+This skill inverts that. The source of truth becomes a file in cloud storage (any connected cloud-storage or file MCP, or local) that every surface can read and write. The in-app instructions shrink to a thin pointer. The AI maintains the file through two propose-then-approve ceremonies — a session-start load and a session-close reconcile — plus real-time updates on cue. It never writes silently: it verifies, proposes a diff, gets your approval, then writes. Current-state sections are edited in place; a Changelog at the bottom is append-only; a clobber guard prevents one surface from silently overwriting another's edits.
 
 ## When it activates
 
@@ -48,7 +48,7 @@ If the project can't be resolved from your cue, the skill asks rather than guess
 ## Composition with other skills
 
 - **`dev-session-protocol`** — independent but interoperable. That skill owns session-boundary timing for code work; when it is active, this skill runs its file load/close inside that boundary instead of launching a competing ceremony. When absent (non-code project), this skill runs its own start/close.
-- **Domain packs (e.g. `ibm-deck-themes`)** — independent. Domain skills govern deliverables; this governs the portable context file. They co-fire cleanly.
+- **Domain packs (e.g. a deck-theme or formatting pack)** — independent. Domain skills govern deliverables; this governs the portable context file. They co-fire cleanly.
 - **`clickup-pm-workflow` / `notion-pm-workflow`** — independent. Those track tasks in a PM tool; this tracks portable narrative context in a file. Use both when a project has a tracker and a context file.
 
 ## Usage patterns
@@ -60,7 +60,8 @@ If the project can't be resolved from your cue, the skill asks rather than guess
 
 ## Common mistakes
 
-- Putting skill references in the portable file — they are Claude-only and belong in the in-app instructions; the portable file stays AI-agnostic.
+- Treating skill references as platform-only — when the skills live in an any-AI-reachable repo, the portable file may name them (by access path) with a one-line plain-language discipline; what stays platform-specific is the auto-load mechanism, not the knowledge that the skills exist.
+- Recording a bare path with no storage system / MCP named — in multi-account, multi-service setups a path alone does not say which system holds the file, and different AIs reach different systems.
 - Writing without approval — every write path is propose-then-approve.
 - Rewriting the Changelog — it is append-only; current-state edits go in the body, history goes in the log.
 - Skipping the clobber guard — always re-check last_updated before writing, or a concurrent edit gets lost.
@@ -68,8 +69,21 @@ If the project can't be resolved from your cue, the skill asks rather than guess
 - Forcing a folder template onto a project, or naming folders by process ("Outputs", "Artifacts") or file type — structure is derived per project and grouped by function, and small projects stay flat.
 - Reorganizing files silently or leaving the "Assets & locations" map stale after a move — folder changes are proposed, approved, and reflected in the map and Changelog in the same pass.
 
+## Skill maturity
+
+Stable, in active use. Versioning floats per the repo model — no pinned `version`; every commit is the current version.
+
+**2026-06-27 — structural correction (model refined from real-world use):**
+
+- The portable context file **may** now name the project's governing skills when they live in an any-AI-reachable repo (name + access path), each paired with a one-line plain-language discipline. What stays platform-specific is the **auto-load mechanism**, not the knowledge the skills exist. (Reverses the earlier "skills are platform-only, never in the portable file" rule.)
+- Layer 1 is reframed as a **universal portable bootloader**: the same minimal body drops into any AI app's project-instructions field, with a short capability-based **platform-notes** block as the only platform-specific part, and a graceful-degradation fallback carrying the load-bearing essentials.
+- Every location is named as `<storage system / MCP> (<account or scope>) : <full path>`, not a bare path.
+- The layer-3 "Assets & locations" section is now a table with a **Storage** column.
+
+> The `evals/evals.json` cases that asserted the old "no skills in the portable file" boundary were updated to the new rule in this change. Some pre-existing illustrative example names elsewhere in this README and the evals (project names, a connector name) are left unchanged; they can be de-identified in a separate pass if full universality is wanted.
+
 ## Files in this skill
 
 - `SKILL.md` — the skill definition and core rules
 - `references/templates.md` — per-project schema, root directory + global-rules template, in-app pointer template, ceremony scripts, style spec, clobber guard, and an illustrative derived folder structure
-- `evals/evals.json` — 14 test cases covering triggers, the propose-then-approve and append-only and clobber-guard rules, the no-skills-in-portable-file boundary, the no-storage fallback, dev-session-protocol composition, folder-organization behavior (proactive threshold proposal, group-by-function naming, no silent reorganization), new-project creation (cross-functional default, single-AI only on signal), and close-ceremony skill-trigger drift detection
+- `evals/evals.json` — 14 test cases covering triggers, the propose-then-approve and append-only and clobber-guard rules, the portable-file skill-reference rule (skills named by access path with a plain-language discipline when repo-reachable), the no-storage fallback, dev-session-protocol composition, folder-organization behavior (proactive threshold proposal, group-by-function naming, no silent reorganization), new-project creation (cross-functional default, single-AI only on signal), and close-ceremony skill-trigger drift detection
