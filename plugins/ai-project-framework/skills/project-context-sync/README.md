@@ -1,6 +1,6 @@
 # project-context-sync
 
-Portable, cross-session, cross-AI project context management. Keeps a durable per-project context file in cloud storage so project state survives across Claude surfaces (Chat, Code, Cowork, Design) and across different AIs (GPT, Gemini, Grok, Perplexity). The cornerstone of the "AI Project Framework" — the layer that makes project context portable instead of trapped in one module's instructions.
+Portable, cross-session, cross-AI project context management. Keeps a durable per-project context file in cloud storage so project state survives across Claude surfaces (Chat, Code, Cowork, Design) and across different AIs. The cornerstone of the "AI Project Framework" — the layer that makes project context portable instead of trapped in one module's instructions.
 
 ## What it does
 
@@ -12,7 +12,7 @@ This skill inverts that. The source of truth becomes a file in cloud storage (an
 
 Triggers on:
 
-- Naming a project to work in: "we're working in Weaver", "load the TMA project", "switch to Strongwatch"
+- Naming a project to work in: "we're working in <project>", "load the <project> project", "switch to <project>"
 - Starting or closing a project work session
 - "Update the project instructions / context / file"
 - Creating or standardizing a project context file
@@ -27,9 +27,9 @@ Doesn't trigger on:
 
 | Required/Optional | What to specify | Example |
 |---|---|---|
-| Recommended | The project name at session start | "We're working in Weaver" |
-| Optional | The storage folder path if the project is new or ambiguous | "/AI Projects/IBM/Weaver Frontier Scanning" |
-| Optional | Which storage connector to use | Dropbox (default), Box, Google Drive, or local |
+| Recommended | The project name at session start | "We're working in <project>" |
+| Optional | The storage folder path if the project is new or ambiguous | "<storage system / MCP> : /<area>/<project>" |
+| Optional | Which storage connector to use | Any connected cloud storage or file MCP, or local |
 | Optional | Approval preference | Default is propose-then-approve on every write |
 
 If the project can't be resolved from your cue, the skill asks rather than guessing.
@@ -53,10 +53,10 @@ If the project can't be resolved from your cue, the skill asks rather than guess
 
 ## Usage patterns
 
-- **Start of session:** "We're working in Weaver." → skill loads the file and opens with where you left off.
-- **Mid-session decision:** "Update the context — EMC is now 2.0 FTE." → skill proposes the edit + Changelog line, you approve, it writes.
+- **Start of session:** "We're working in <project>." → skill loads the file and opens with where you left off.
+- **Mid-session decision:** "Update the context — the scope is now two workstreams." → skill proposes the edit + Changelog line, you approve, it writes.
 - **End of session:** "Wrap this up." → skill audits the session, proposes a close-out diff, you approve, it writes and bumps last_updated.
-- **New project:** "Set up project instructions for X at /AI Projects/.../X." → skill runs the creation flow: builds the portable context file, a root/global-rules file if the area needs one, and an in-app bootloader to paste — defaulting to the cross-functional portable structure.
+- **New project:** "Set up project instructions for <project> at <storage system / MCP> : /<area>/<project>." → skill runs the creation flow: builds the portable context file, a root/global-rules file if the area needs one, and an in-app bootloader to paste — defaulting to the cross-functional portable structure.
 
 ## Common mistakes
 
@@ -80,7 +80,12 @@ Stable, in active use. Versioning floats per the repo model — no pinned `versi
 - Every location is named as `<storage system / MCP> (<account or scope>) : <full path>`, not a bare path.
 - The layer-3 "Assets & locations" section is now a table with a **Storage** column.
 
-> The `evals/evals.json` cases that asserted the old "no skills in the portable file" boundary were updated to the new rule in this change. Some pre-existing illustrative example names elsewhere in this README and the evals (project names, a connector name) are left unchanged; they can be de-identified in a separate pass if full universality is wanted.
+> The `evals/evals.json` cases that asserted the old "no skills in the portable file" boundary were updated to the new rule in that change.
+
+**2026-06-30 — cleanup pass (naming + path alignment; no logic change):**
+
+- De-identified the remaining illustrative example names (project codenames, an example org, a placeholder metric, connector product names, and other-AI product lists) into generic placeholders, so the skill reads fully generic to any AI or project. Host-platform surface references ("Claude surfaces") were kept as structural context, not examples.
+- Aligned the in-repo skill path pattern to the marketplace layout — `plugins/<domain>/skills/<name>/SKILL.md` (previously the flat `skills/<name>/SKILL.md`) — shown as a pattern, not hardcoded to any one domain.
 
 ## Files in this skill
 

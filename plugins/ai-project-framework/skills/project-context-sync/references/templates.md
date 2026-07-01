@@ -47,7 +47,7 @@ Every deliverable, file, and folder appears here so any session can find it. The
 ## 6. How to use (for future AIs / sessions)
 - Precedence rules, the must-not-lose anchors, anything an incoming session needs to not break the thread.
 - **Governing disciplines (plain language):** one line per rule the project operates by, so any AI behaves consistently even if it cannot run the skills. Example: "Never write the context file without proposing a diff and getting approval first."
-- **Skills that enforce them:** one line per governing skill — name + canonical repo location, e.g. `project-context-sync — <repo> : skills/project-context-sync/SKILL.md`. A platform where these skills auto-load uses them directly; any other AI reads the source at that path and applies the discipline by hand.
+- **Skills that enforce them:** one line per governing skill — name + canonical repo location, e.g. `project-context-sync — <repo> : plugins/<domain>/skills/project-context-sync/SKILL.md`. A platform where these skills auto-load uses them directly; any other AI reads the source at that path and applies the discipline by hand.
 
 ## Changelog
 <!-- APPEND ONLY. One line per change. Never rewrite existing lines. -->
@@ -106,7 +106,7 @@ If you cannot reach the context file, proceed on these essentials only:
 - Scope: work only within <this project's scope>; if unsure, ask.
 - Core discipline: <the project's one load-bearing rule, e.g. propose a diff and get approval before writing>.
 - Producer/executor split: one side proposes, the other approves and executes; no silent writes.
-- Skills live in the repo: <repo> : skills/<name>/SKILL.md — read them there if your platform cannot auto-load them.
+- Skills live in the repo: <repo> : plugins/<domain>/skills/<name>/SKILL.md — read them there if your platform cannot auto-load them.
 
 Platform notes (apply only the line that fits you):
 - On a platform where these skills are installed and auto-load by name, use them directly.
